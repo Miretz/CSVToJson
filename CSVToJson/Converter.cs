@@ -71,27 +71,34 @@ namespace CSVToJson
 
         public string ConvertJSONtoCSV(string json)
         {
-            DataTable dt = JsonConvert.DeserializeObject<DataTable>(json);
-            StringBuilder sb = new StringBuilder();
-
-            IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().
-                                  Select(column => column.ColumnName);
-            sb.AppendLine(string.Join(ColumnSeparator.ToString(), columnNames));
-
-            foreach (DataRow row in dt.Rows)
+            try
             {
-                IEnumerable<string> fields = row.ItemArray.Select(field =>
-                {
-                    if (field.GetType().IsArray)
-                    {
-                        return string.Join(ValueSeparator.ToString(), field as string[]);
-                    }
-                    return field.ToString();
-                });
-                sb.AppendLine(string.Join(ColumnSeparator.ToString(), fields));
-            }
+                DataTable dt = JsonConvert.DeserializeObject<DataTable>(json);
+                StringBuilder sb = new StringBuilder();
 
-            return sb.ToString().Trim();
+                IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().
+                                      Select(column => column.ColumnName);
+                sb.AppendLine(string.Join(ColumnSeparator.ToString(), columnNames));
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    IEnumerable<string> fields = row.ItemArray.Select(field =>
+                    {
+                        if (field.GetType().IsArray)
+                        {
+                            return string.Join(ValueSeparator.ToString(), field as string[]);
+                        }
+                        return field.ToString();
+                    });
+                    sb.AppendLine(string.Join(ColumnSeparator.ToString(), fields));
+                }
+
+                return sb.ToString().Trim();
+            }
+            catch (Exception e)
+            {
+                return "Error! Invalid Json.";
+            }
         }
 
 
